@@ -19,7 +19,7 @@ get_button_states:
 
 MARGIN = 4                      ; pixel margin for screen
 MARGIN_LEFT = MARGIN
-MARGIN_TOP = 120 + MARGIN + 8 + 24 ; top 8 pixels is hidden, player height 24
+MARGIN_TOP = 80 + MARGIN + 8 + 24 ; top 8 pixels is hidden, player height 24
 MARGIN_RIGHT = 16 + MARGIN      ; 16 is player width
 MARGIN_BOTTOM = 16 + MARGIN + 16      ; top is 16 pixels less than 255
   ;; Why we need another 16 IDK
