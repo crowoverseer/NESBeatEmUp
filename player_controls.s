@@ -2,6 +2,7 @@
 ;;; basic player movement system
 
 .include "constants.inc"
+.include "object_states.inc"
 
 .macro Read_controller1
   LDA #$01                      ; init the controller
@@ -19,7 +20,7 @@ get_button_states:
 
 MARGIN = 4                      ; pixel margin for screen
 MARGIN_LEFT = MARGIN
-MARGIN_TOP = 80 + MARGIN + 8 + 24 ; top 8 pixels is hidden, player height 24
+MARGIN_TOP = 100 + MARGIN + 8 + 24 ; top 8 pixels is hidden, player height 24
 MARGIN_RIGHT = 16 + MARGIN      ; 16 is player width
 MARGIN_BOTTOM = 16 + MARGIN + 16      ; top is 16 pixels less than 255
   ;; Why we need another 16 IDK
@@ -33,11 +34,17 @@ check_left:
   AND #BTN_LEFT
   BEQ check_right
   DEC player_x
+  LDA player_flags
+  ORA #DIRECT_LEFT
+  STA player_flags
 check_right:
   LDA pad1
   AND #BTN_RIGHT
   BEQ check_up
   INC player_x
+  LDA player_flags
+  AND #%11111110                ; set bit to direction right
+  STA player_flags
 check_up:
   LDA pad1
   AND #BTN_UP
@@ -82,4 +89,4 @@ return:
 .endproc
 
 .segment "ZEROPAGE"
-.importzp player_x, player_y, pad1
+.importzp player_x, player_y, player_flags, pad1

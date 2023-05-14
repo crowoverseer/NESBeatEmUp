@@ -79,6 +79,9 @@ load_sprites:
   STA player_x
   LDA #PLAYER_Y_INIT
   STA player_y
+  ;; player initial state
+  LDX #%00000000
+  STX player_flags
 vblankwait:       ; wait for another vblank before continuing
   BIT PPUSTATUS
   BPL vblankwait
@@ -95,12 +98,12 @@ forever:
 .segment "ZEROPAGE"
 player_x: .res 1
 player_y: .res 2
-player_dir: .res 1
+player_flags: .res 1
 scroll: .res 1
 ppuctrl_settings: .res 1
 pad1: .res 1
 buffer1: .res 1
-.exportzp player_x, player_y, player_dir, pad1, buffer1
+.exportzp player_x, player_y, player_flags, pad1, buffer1
 
 .segment "RODATA"
 palettes:

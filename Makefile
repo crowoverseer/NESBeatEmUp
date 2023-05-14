@@ -13,8 +13,11 @@ output.nes: ${CFG} ${OBJ}
 main.o: main.s ${GRAPHIC} ${INC}
 	ca65 main.s -o main.o
 
-draw_player.o: draw_player.s ${GRAPHIC} ${INC}
+draw_player.o: draw_player.s ${GRAPHIC} ${INC} object_states.inc
 	ca65 draw_player.s -o draw_player.o
+
+player_controls.o: player_controls.s ${INC} object_states.inc
+	ca65 player_controls.s -o player_controls.o
 
 %.o: %.s ${SRC} ${INC}
 	ca65 $< -o $@
