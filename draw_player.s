@@ -4,17 +4,10 @@
 
 START_TILE = $00
 
-.macro INX_4_4
-  INX
-  INX
-  INX
-  INX
-.endmacro
-
 .export draw_player
 .proc draw_player
   ;; write player tile numbers
-  LDX #$00                      ; tile memory address
+  LDX current_sprite                      ; tile memory address
   LDY #$00                      ; tile offset
 next_tile_graphic:
   ;; flip check
@@ -55,21 +48,32 @@ end_loop_operations:
 attributes:
   ;; write player tile attributes
   ;; use palette 0
-  LDX #$00
+  LDY #%00000000
   ;; direct left or right
   LDA player_flags
   AND #DIRECT_LEFT
-  BEQ write_attribute_info
-  LDX #%01000000                 ; flip horizontally
-write_attribute_info:
-  STX $0202
-  STX $0206
-  STX $020a
-  STX $020e
-  STX $0212
-  STX $0216
-
-  ;; store tile locations
+  BEQ write_attributes_start
+  LDY #%01000000                ; flip horizontally
+write_attributes_start:
+  CLC
+  LDA #00
+  STA buffer                    ; how many tiles are written
+  LDA current_sprite
+  ROL                           ; *4, because tile contains 4 bytes
+  ROL
+  TAX
+next_attribute:
+  TYA                           ; Y contains atrributes
+  STA $0202, X                  ; attribute bite is second
+  TXA
+  ADC #$04
+  TAX
+  INC buffer
+  LDA buffer
+  CMP #$06
+  BNE next_attribute
+write_positions:
+  ;; store tile positions
   LDA player_y
   SEC
   SBC #$18                       ; top sprites 24 pixels up
@@ -107,9 +111,14 @@ next_tile:
   TAY                           ; next level of tiles
   JMP next_tile
 draw_fighting:
+  LDA current_sprite
+  CLC
+  ADC #$06
+  STA current_sprite
 .include "draw_player_fighting.s"
   RTS
 .endproc
 
 .segment "ZEROPAGE"
-.importzp player_x, player_y, player_flags, player_state
+.importzp player_x, player_y, player_flags, buffer
+.importzp player_state, current_sprite

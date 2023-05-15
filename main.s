@@ -38,10 +38,9 @@
   LDA #240
   STA scroll
 set_scroll_positions:
-  LDA #$00                      ; x is first
+  LDA scroll                    ; x is first
   STA PPUSCROLL
-  DEC scroll
-  LDA scroll                    ; y is second
+  LDA #$00                      ; y is second
   STA PPUSCROLL
 
   ;; restoring the register states
@@ -107,10 +106,11 @@ player_flags: .res 1
 player_state: .res 1
 scroll: .res 1
 ppuctrl_settings: .res 1
-pad1: .res 1
+pad1: .res 1                    ; separate memory for easy debugging
+buffer: .res 1
 current_sprite: .res 1          ; how many sprites drawn
 .exportzp player_x, player_y, player_flags, player_state
-.exportzp pad1, current_sprite
+.exportzp pad1, buffer, current_sprite
 .importzp fighting_flags
 
 .segment "RODATA"
