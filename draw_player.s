@@ -4,6 +4,13 @@
 
 START_TILE = $00
 
+.macro INX_4_4
+  INX
+  INX
+  INX
+  INX
+.endmacro
+
 .export draw_player
 .proc draw_player
   ;; write player tile numbers
@@ -65,7 +72,7 @@ write_attribute_info:
   ;; store tile locations
   LDA player_y
   SEC
-  SBC #$10                       ; top sprites 16 pixels up
+  SBC #$18                       ; top sprites 24 pixels up
   TAY                            ; Y contains Y pos
   LDX #0                         ; X will 0.4.24, - 6*4 tile address
 next_tile:
@@ -94,14 +101,15 @@ next_tile:
   ;; next tile
   TXA
   CMP #24
-  BEQ return
+  BEQ draw_fighting
   TYA
   ADC #$08
   TAY                           ; next level of tiles
   JMP next_tile
-return:
+draw_fighting:
+.include "draw_player_fighting.s"
   RTS
 .endproc
 
 .segment "ZEROPAGE"
-.importzp player_x, player_y, player_flags
+.importzp player_x, player_y, player_flags, player_state

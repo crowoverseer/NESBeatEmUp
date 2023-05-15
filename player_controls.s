@@ -82,11 +82,13 @@ check_down_border:
   CLC
   LDA player_y
   ADC #MARGIN_BOTTOM
-  BCC return
+  BCC check_fighting
   DEC player_y
-return:
+check_fighting:
+.include "player_controls_fighting.s"
   RTS
 .endproc
 
 .segment "ZEROPAGE"
-.importzp player_x, player_y, player_flags, pad1
+.importzp player_x, player_y, player_flags, player_state
+.importzp player_post_punch_frames, pad1, fighting_flags

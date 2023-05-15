@@ -7,8 +7,8 @@
 .endproc
 
 .import draw_player
-.import update_player
 .import player_controls
+.import fighting_controller
 
 .proc nmi_handler
   ;; saving the register states
@@ -20,8 +20,12 @@
   LDA #$02                      ; tranfer page from $0200
   STA OAMDMA
 
+  ;; reset current sprite
+  LDA #$00
+  STA current_sprite
   ;; update tiles after DMA transfer
   JSR player_controls
+  JSR fighting_controller
   JSR draw_player
 
   LDA scroll
@@ -82,6 +86,7 @@ load_sprites:
   ;; player initial state
   LDX #%00000000
   STX player_flags
+  STX fighting_flags
 vblankwait:       ; wait for another vblank before continuing
   BIT PPUSTATUS
   BPL vblankwait
@@ -97,13 +102,16 @@ forever:
 
 .segment "ZEROPAGE"
 player_x: .res 1
-player_y: .res 2
+player_y: .res 1
 player_flags: .res 1
+player_state: .res 1
 scroll: .res 1
 ppuctrl_settings: .res 1
 pad1: .res 1
-buffer1: .res 1
-.exportzp player_x, player_y, player_flags, pad1, buffer1
+current_sprite: .res 1          ; how many sprites drawn
+.exportzp player_x, player_y, player_flags, player_state
+.exportzp pad1, current_sprite
+.importzp fighting_flags
 
 .segment "RODATA"
 palettes:
@@ -118,7 +126,7 @@ palettes:
   .byte $0f, $19, $09, $29
 
 sprites:
-  ;; Y pos, tile number, palette, X pos
+  ;; Y pos, tile number, attributes, X pos
   .byte PLAYER_Y_INIT - 16, $00, $00, PLAYER_X_INIT
   .byte PLAYER_Y_INIT - 16, $00, $00, PLAYER_X_INIT + 8
   .byte PLAYER_Y_INIT - 8, $00, $00, PLAYER_X_INIT

@@ -23,3 +23,5 @@ BTN_A       = %10000000
 ;;; player initial position
 PLAYER_X_INIT = $40
 PLAYER_Y_INIT = $C0
+
+;;; some game constants
