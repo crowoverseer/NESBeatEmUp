@@ -55,7 +55,7 @@ set_scroll_positions:
 .export main
 .proc main
   ;; initial scroll
-  LDA #239                      ; y have only 240 pixels
+  LDA #0
   STA scroll
   ;; write palette
   LDX PPUSTATUS
@@ -86,6 +86,8 @@ load_sprites:
   LDX #%00000000
   STX player_flags
   STX fighting_flags
+  STX player_anim_frame_pass
+  STX player_frame
 vblankwait:       ; wait for another vblank before continuing
   BIT PPUSTATUS
   BPL vblankwait
@@ -104,13 +106,16 @@ player_x: .res 1
 player_y: .res 1
 player_flags: .res 1
 player_state: .res 1
+player_frame: .res 1            ; current animation frame (sprite)
+player_anim_frame_pass: .res 1  ; used for remember how many frames passed
+                                ; after previous animation
 scroll: .res 1
 ppuctrl_settings: .res 1
 pad1: .res 1                    ; separate memory for easy debugging
 buffer: .res 1
 current_sprite: .res 1          ; how many sprites drawn
-.exportzp player_x, player_y, player_flags, player_state
-.exportzp pad1, buffer, current_sprite
+.exportzp player_x, player_y, player_flags, player_state, player_frame
+.exportzp player_anim_frame_pass, pad1, buffer, current_sprite
 .importzp fighting_flags
 
 .segment "RODATA"

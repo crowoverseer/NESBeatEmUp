@@ -2,7 +2,9 @@
 
 .include "object_states.inc"
 
-START_TILE = $00
+START_TILE_FRAME_1 = $00
+START_TILE_FRAME_2 = $06
+START_TILE_FRAME_3 = $0c
 
 .export draw_player
 .proc draw_player
@@ -32,8 +34,32 @@ even_tile:
 normal_tile_sequence:
   TYA
 write_tile:
+  ;; saving registers
+  PHA                           ; A first
+  TXA
+  PHA                           ; X second
+  ;; looking for current animation frame
+  LDX player_frame
+  CPX #$01
+  BEQ frame_2
+  CPX #$02
+  BEQ frame_3
+frame_1:
+  LDA #START_TILE_FRAME_1
+  JMP write_tile_with_offset
+frame_2:
+  LDA #START_TILE_FRAME_2
+  JMP write_tile_with_offset
+frame_3:
+  LDA #START_TILE_FRAME_3
+write_tile_with_offset:
+  STA buffer                    ; there is tile offset
+  ;; restoring registers
+  PLA
+  TAX
+  PLA
   CLC
-  ADC #START_TILE
+  ADC buffer
   STA $0201, X
   TXA
   CLC
@@ -120,5 +146,5 @@ draw_fighting:
 .endproc
 
 .segment "ZEROPAGE"
-.importzp player_x, player_y, player_flags, buffer
+.importzp player_x, player_y, player_flags, player_frame, buffer
 .importzp player_state, current_sprite

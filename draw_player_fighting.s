@@ -2,7 +2,7 @@
 ;;; it is should be included into draw_player.s
 ;;; all imports should be done there
 
-;;; .importzp player_x, player_y, player_flags, player_state
+;;; .importzp player_x, player_y, player_flags, player_state, player_frame
 
 .include "object_states.inc"
   CLC
@@ -31,7 +31,7 @@ draw_punch_frame:
 
   LDA #$06                      ; tile number
   CLC
-  ADC #START_TILE
+  ADC #START_TILE_FRAME_1
   STA $0201, X
 
   LDA player_flags
