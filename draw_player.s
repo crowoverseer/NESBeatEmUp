@@ -3,8 +3,8 @@
 .include "object_states.inc"
 
 START_TILE_FRAME_1 = $00
-START_TILE_FRAME_2 = $06
-START_TILE_FRAME_3 = $0c
+START_TILE_FRAME_2 = $08
+START_TILE_FRAME_3 = $10
 
 .export draw_player
 .proc draw_player
@@ -68,7 +68,7 @@ write_tile_with_offset:
 end_loop_operations:
   INY
   TXA
-  CMP #24
+  CMP #32                       ; 8 tiles for 4 bites
   BEQ attributes
   JMP next_tile_graphic
 attributes:
@@ -96,15 +96,15 @@ next_attribute:
   TAX
   INC buffer
   LDA buffer
-  CMP #$06
+  CMP #$08                      ; 8 tiles
   BNE next_attribute
 write_positions:
   ;; store tile positions
   LDA player_y
   SEC
-  SBC #$18                       ; top sprites 24 pixels up
+  SBC #$20                       ; top sprites 32 pixels up
   TAY                            ; Y contains Y pos
-  LDX #0                         ; X will 0.4.24, - 6*4 tile address
+  LDX #0                         ; X will 0.4.32, - 6*4 tile address
 next_tile:
   ;; store Y pos
   TYA
@@ -130,7 +130,7 @@ next_tile:
   INX
   ;; next tile
   TXA
-  CMP #24
+  CMP #32
   BEQ draw_fighting
   TYA
   ADC #$08
@@ -139,7 +139,7 @@ next_tile:
 draw_fighting:
   LDA current_sprite
   CLC
-  ADC #$06
+  ADC #$08
   STA current_sprite
 .include "draw_player_fighting.s"
   RTS

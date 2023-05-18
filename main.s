@@ -120,12 +120,12 @@ current_sprite: .res 1          ; how many sprites drawn
 
 .segment "RODATA"
 palettes:
-  .byte $0f, $12, $23, $27
+  .byte $0f, $0d, $11, $26
   .byte $0f, $2b, $3c, $39
   .byte $0f, $0c, $07, $13
   .byte $0f, $19, $09, $29
 
-  .byte $0f, $2d, $10, $15
+  .byte $0f, $0d, $11, $26
   .byte $0f, $19, $09, $29
   .byte $0f, $19, $09, $29
   .byte $0f, $19, $09, $29

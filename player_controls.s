@@ -21,7 +21,7 @@ get_button_states:
 
 MARGIN = 4                      ; pixel margin for screen
 MARGIN_LEFT = 8                 ; because of punching tile
-MARGIN_TOP = 100 + MARGIN + 8 + 24 ; top 8 pixels is hidden, player height 24
+MARGIN_TOP = 100 + MARGIN + 8 + 32 ; top 8 pixels is hidden, player height 32
 MARGIN_RIGHT = 16 + MARGIN      ; 16 is player width
 MARGIN_BOTTOM = 16 + MARGIN + 8 ; top is 16 pixels less than 255
   ;; Why we need another 8 IDK

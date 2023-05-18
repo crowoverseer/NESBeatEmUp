@@ -1,0 +1,8 @@
+{
+  "filename": "bank1_player_main.nesproj",
+  "filepath": "/Users/leonidponomarev/NES/beatEmUp/image_src/bank1_player_main.nesproj",
+  "bank": 0,
+  "nametable": "/Users/leonidponomarev/NES/beatEmUp/image_src/bank1_player_main.nam",
+  "tileset": "/Users/leonidponomarev/NES/beatEmUp/graphics.chr",
+  "palettes": "/Users/leonidponomarev/NES/beatEmUp/image_src/bank1_player_main.pal"
+}
