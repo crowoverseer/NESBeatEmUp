@@ -3,6 +3,7 @@
 
 .include "constants.inc"
 .include "object_states.inc"
+.include "fighting_constants.inc"
 
 .macro Read_controller1
   LDA #$01                      ; init the controller
@@ -34,6 +35,11 @@ FRAME_TO_NEXT_ANIM = 10         ; how many CRT frames to next animation frame
                                 ; 0 - reset
                                 ; >0 - increase frame cnt for ONE
                                 ; always ONE, even if X is > 1
+check_allowed_to_walk:
+  LDA player_post_punch_frames
+  CMP #END_PUNCH_FRAME
+  BCS check_left
+  JMP operate_fighting
 check_left:
   LDA pad1
   AND #BTN_LEFT
@@ -107,7 +113,7 @@ animation_frames_adj:
   STX player_anim_frame_pass
   CLC
   CPX #FRAME_TO_NEXT_ANIM
-  BNE draw_fighting
+  BNE operate_fighting
   LDX player_frame
   INX
   CPX #03
@@ -115,12 +121,12 @@ animation_frames_adj:
   STX player_frame
   LDX #00
   STX player_anim_frame_pass
-  JMP draw_fighting
+  JMP operate_fighting
 reset_frame:
   LDX #00
   STX player_frame
   STX player_anim_frame_pass
-draw_fighting:
+operate_fighting:
 .include "player_controls_fighting.s"
   RTS
 .endproc
