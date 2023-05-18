@@ -36,9 +36,9 @@ FRAME_TO_NEXT_ANIM = 10         ; how many CRT frames to next animation frame
                                 ; >0 - increase frame cnt for ONE
                                 ; always ONE, even if X is > 1
 check_allowed_to_walk:
-  LDA player_post_punch_frames
-  CMP #END_PUNCH_FRAME
-  BCS check_left
+  LDA player_state
+  AND #PUNCHING
+  BEQ check_left
   JMP operate_fighting
 check_left:
   LDA pad1
