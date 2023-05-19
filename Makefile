@@ -1,5 +1,5 @@
 INC = constants.inc header.inc object_states.inc fighting_constants.inc guard_registry.mac
-SRC = main.s reset.s draw_player.s player_controls.s fighting_controller.s
+SRC = main.s reset.s draw_player.s draw_sprite.s player_controls.s fighting_controller.s
 OBJ = ${SRC:.s=.o}
 CFG = nes.cfg
 GRAPHIC = graphics.chr
@@ -13,8 +13,11 @@ output.nes: ${CFG} ${OBJ}
 main.o: main.s ${GRAPHIC} ${INC} ${SRC}
 	ca65 main.s -o main.o
 
-draw_player.o: draw_player.s draw_player_fighting.s ${GRAPHIC} ${INC} object_states.inc
+draw_player.o: draw_player.s draw_player_fighting.s ${GRAPHIC} ${INC} object_states.inc draw_sprite.s
 	ca65 draw_player.s -o draw_player.o
+
+draw_sprite.o: draw_sprite.s ${GRAPHIC} ${INC}
+	ca65 draw_sprite.s -o draw_sprite.o
 
 player_controls.o: player_controls.s player_controls_fighting.s fighting_controller.s ${INC} object_states.inc fighting_constants.inc
 	ca65 player_controls.s -o player_controls.o

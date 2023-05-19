@@ -10,6 +10,8 @@ PPUSCROLL = $2005
 CONTROLLER1 = $4016
 CONTROLLER2 = $4017
 
+DEBUGGER = $03FF
+
 ;;; logical fiters for controllers
 BTN_RIGHT   = %00000001
 BTN_LEFT    = %00000010
