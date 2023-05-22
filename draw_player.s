@@ -28,6 +28,11 @@ write_attributes:
   LDA player_y
   STA $F5
   ;; looking for current animation frame
+  LDA player_state
+  CMP #PUNCHING
+  BNE check_walking
+  JMP draw_player_fighting
+check_walking:
   LDX player_frame
   CPX #$01
   BEQ frame_2
@@ -44,7 +49,8 @@ frame_3:
 write_tile_offset:
   STA $F0                    ; there is tile offset
   JSR draw_sprite
-;.include "draw_player_fighting.s"
+draw_player_fighting:
+.include "draw_player_fighting.s"
   RTS
 .endproc
 

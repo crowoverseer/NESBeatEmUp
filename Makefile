@@ -22,7 +22,7 @@ draw_sprite.o: draw_sprite.s ${GRAPHIC} ${INC}
 player_controls.o: player_controls.s player_controls_fighting.s fighting_controller.s ${INC} object_states.inc fighting_constants.inc
 	ca65 player_controls.s -o player_controls.o
 
-fighting_controller.o: fighting_controller.s main.s fighting_constants.inc
+fighting_controller.o: fighting_controller.s main.s fighting_constants.inc object_states.inc
 	ca65 fighting_controller.s -o fighting_controller.o
 
 reset.o: reset.s main.s ${INC}
