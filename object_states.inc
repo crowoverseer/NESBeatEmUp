@@ -1,4 +1,4 @@
-;;; logical filters for player and npc
+;;; logical filters for player and npc flags
 DIRECT_LEFT = %00000001  ; sprite should be flipped
 ATTACKING   = %00000010
 

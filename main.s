@@ -51,6 +51,7 @@ set_scroll_positions:
 .endproc
 
 .import reset_handler
+.import create_npc
 
 .export main
 .proc main
@@ -97,6 +98,14 @@ vblankwait:       ; wait for another vblank before continuing
   STA PPUCTRL
   LDA #%00011110  ; turn on screen
   STA PPUMASK
+create_npcs:
+  LDA #$00
+  STA $F0
+  LDA #$C0
+  STA $F1
+  LDA #$80
+  STA $F2
+  JSR create_npc
 forever:
   JMP forever
 .endproc
