@@ -1,0 +1,15 @@
+;;; Each npc have 10 bytes of information
+  NPC_ID = 0
+  NPC_TOP = 1
+  NPC_LEFT = 2
+  NPC_FLAGS = 3
+  NPC_STATE = 4
+  NPC_LIFE = 5
+  NPC_ANIM_SPRITE = 6
+  NPC_ANIM_FRAMES_PASS = 7
+  NPC_FIGHTING_FLAGS = 8
+  NPC_PUNCH_FRAMES_PASS = 9
+
+  NPC_COUNT = $50
+  MAX_NPC_COUNT = 5
+  NPC_RUNDATA_LENGTH = $A0

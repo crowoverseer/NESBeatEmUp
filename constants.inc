@@ -11,6 +11,8 @@ CONTROLLER1 = $4016
 CONTROLLER2 = $4017
 
 DEBUGGER = $03FF
+NON_ZP_BUFFER   = $07FF
+NON_ZP_BUFFER_2 = $07FE
 
 ;;; logical fiters for controllers
 BTN_RIGHT   = %00000001

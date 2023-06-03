@@ -3,23 +3,12 @@
 ;;; There is 5 npc max
 ;;; The memory location 50-83
 
+.include "constants.inc"
+
 ;;; Adress 50 contains total npc count
 
 ;;; Each npc have 10 bytes of information
-  NPC_ID = 0
-  NPC_TOP = 1
-  NPC_LEFT = 2
-  NPC_FLAGS = 3
-  NPC_STATE = 4
-  NPC_LIFE = 5
-  NPC_ANIM_SPRITE = 6
-  NPC_ANIM_FRAMES_PASS = 7
-  NPC_FIGHTING_FLAGS = 8
-  NPC_PUNCH_FRAMES_PASS = 9
-
-  NPC_COUNT = $50
-  MAX_NPC_COUNT = 5
-  NPC_RUNDATA_LENGTH = $A0
+.include "npc_controller.inc"
 
 ;;; arguments
   SPAWN_NPC_ID_ARG = $F0
@@ -35,33 +24,35 @@
   RTS
 start_spawning:
   ;; get offset
-  TAX
-  LDA #0
+  TAX                           ; there X contains NPC_COUNT
+  LDA #0                        ; there A contains current npc offset
+  CLC
 get_spawn_offset:
   DEX
-  BEQ write_new_data
-  CLC
+  BMI write_new_data
   ADC #NPC_RUNDATA_LENGTH
   JMP get_spawn_offset
 write_new_data:
   INC NPC_COUNT
-  TAX
+  TAX                           ; X contains npc memory offset
   LDA SPAWN_NPC_ID_ARG
-  STA objects + NPC_ID, X
+  STA npc_objects + NPC_ID, X
   LDA SPAWN_NPC_TOP_ARG
-  STA objects + NPC_TOP, X
+  STA npc_objects + NPC_TOP, X
   LDA SPAWN_NPC_LEFT_ARG
-  STA objects + NPC_LEFT, X
+  STA npc_objects + NPC_LEFT, X
   LDA $A0                       ; ten hitpoints. TODO: get from npc_data
-  STA objects + NPC_LIFE, X            ; life
+  STA npc_objects + NPC_LIFE, X            ; life
   LDA $00
-  STA objects + NPC_STATE, X
-  STA objects + NPC_ANIM_SPRITE, X
-  STA objects + NPC_ANIM_FRAMES_PASS, X
-  STA objects + NPC_FIGHTING_FLAGS, X
-  STA objects + NPC_PUNCH_FRAMES_PASS, X
+  STA npc_objects + NPC_STATE, X
+  STA npc_objects + NPC_ANIM_SPRITE, X
+  STA npc_objects + NPC_ANIM_FRAMES_PASS, X
+  STA npc_objects + NPC_FIGHTING_FLAGS, X
+  STA npc_objects + NPC_PUNCH_FRAMES_PASS, X
+  RTS
 .endproc
 
 .segment "NPCRUNDATA"
-objects:
+.export npc_objects
+npc_objects:
 .res 9 * MAX_NPC_COUNT

@@ -9,6 +9,7 @@
 .import draw_player
 .import player_controls
 .import fighting_controller
+.import npc_artist
 
 .proc nmi_handler
   ;; saving the register states
@@ -27,6 +28,7 @@
   JSR player_controls
   JSR fighting_controller
   JSR draw_player
+  JSR npc_artist
 
   LDA scroll
   CMP $00                       ; did we scroll to the end?
@@ -122,9 +124,10 @@ scroll: .res 1
 ppuctrl_settings: .res 1
 pad1: .res 1                    ; separate memory for easy debugging
 buffer: .res 1
+buffer_2: .res 1
 current_sprite: .res 1          ; how many sprites drawn
 .exportzp player_x, player_y, player_flags, player_state, player_frame
-.exportzp player_anim_frame_pass, pad1, buffer, current_sprite
+.exportzp player_anim_frame_pass, pad1, buffer, buffer_2, current_sprite
 .importzp fighting_flags
 
 .segment "RODATA"
@@ -140,13 +143,6 @@ palettes:
   .byte $0f, $19, $09, $29
 
 sprites:
-  ;; Y pos, tile number, attributes, X pos
-  .byte PLAYER_Y_INIT - 16, $00, $00, PLAYER_X_INIT
-  .byte PLAYER_Y_INIT - 16, $00, $00, PLAYER_X_INIT + 8
-  .byte PLAYER_Y_INIT - 8, $00, $00, PLAYER_X_INIT
-  .byte PLAYER_Y_INIT - 8, $00, $00, PLAYER_X_INIT + 8
-  .byte PLAYER_Y_INIT, $00, $00, PLAYER_X_INIT
-  .byte PLAYER_Y_INIT, $00, $00, PLAYER_X_INIT + 8
 
 .segment "VECTORS"
 .addr nmi_handler, reset_handler, irq_handler

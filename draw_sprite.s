@@ -1,5 +1,8 @@
 ;;; Not protected A, X, Y
 
+.include "constants.inc"
+.include "object_states.inc"
+
 ;;; Params:
 
   START_TILE  = $F0 ; Position of starting tile in bank
@@ -9,13 +12,37 @@
   POS_X       = $F4 ; Sprite position X
   POS_Y       = $F5 ; Sprite position Y
 
-.include "object_states.inc"
-.include "constants.inc"
+  CALCULATED_FINAL_OFFSET = NON_ZP_BUFFER ; Here will be written
+                                ; memory address
+                                ; of final RAM tile. Needed to stop proc
+  INITIAL_OFFSET = NON_ZP_BUFFER_2
 
 .export draw_sprite
 .proc draw_sprite
-  ;; write player tile numbers
-  LDX current_sprite            ; tile memory address
+  ;; calculate final memory address
+  ;; TODO only 64 tiles are supported now
+  LDA current_sprite            ; tile memory address
+  CLC
+  ROL
+  ROL
+  TAX                           ; X contains memory tile offset
+  STA INITIAL_OFFSET
+  ;; count tiles
+  LDA #$00
+  LDY SPRITE_H
+next_row_for_offset:
+  ADC SPRITE_W
+  DEY
+  BNE next_row_for_offset
+  STA buffer_2                  ; ZP buffer_2 will contain tile count
+  ;; add tiles count to final offset
+  ;; each tile - 4 byte
+  ROL
+  ROL
+  ADC INITIAL_OFFSET
+  STA CALCULATED_FINAL_OFFSET
+add_to_offset:
+  ;; TODO: currently X cannot be more than 255, so there are limit to 64 tiles
   LDY #$00                      ; tile offset
 next_tile_graphic:
   LDA ATTRIBUTES
@@ -79,83 +106,94 @@ write_tile_with_offset:
 end_loop_operations:
   INY
   TXA
-  CMP #32                       ; 8 tiles for 4 bites
+  CMP CALCULATED_FINAL_OFFSET
   BEQ write_attributes
   JMP next_tile_graphic
 write_attributes:
-  ;; write player tile attributes
-  ;; use palette 0
+  ;; write sprite tile attributes
   LDY ATTRIBUTES
   CLC
-  LDA #00
-  STA buffer                    ; how many tiles are written
   LDA current_sprite
   ROL                           ; *4, because tile contains 4 bytes
   ROL
-  TAX
+  ADC INITIAL_OFFSET
 next_attribute:
+  TAX
   TYA                           ; Y contains atrributes
   STA $0202, X                  ; attribute bite is second
   TXA
   ADC #$04
-  TAX
-  INC buffer
-  LDA buffer
-  CMP #$08                      ; 8 tiles
+  CMP CALCULATED_FINAL_OFFSET
   BNE next_attribute
-write_positions:
-  ;; store tile positions
-  LDA POS_Y
-  SEC
-  SBC #$20                       ; top sprites 32 pixels up
-  TAY                            ; Y contains Y pos
-  LDX #0                         ; X will 0.4.32, - 6*4 tile address
-next_tile:
-  ;; store Y pos
-  TYA
-  STA $0200, X
-  ;; store X pos - left column
-  INX
-  INX
-  INX
-  LDA POS_X
-  STA $0200, X
-  INX
-  ;; store Y pos - right column
-  TYA
-  STA $0200, X
-  ;; store X pos - right column
-  INX
-  INX
-  INX
-  LDA POS_X
+adjust_sprites_count:
   CLC
-  ADC #08
-  STA $0200, X
-  INX
-  ;; next tile
-  TXA
-  CMP #32
-  BEQ adjust_cur_sprite_cnt
-  TYA
-  ADC #$08
-  TAY                           ; next level of tiles
-  JMP next_tile
-adjust_cur_sprite_cnt:
-  STA DEBUGGER
   LDA current_sprite
-  LDX SPRITE_H
-  CLC
-add_next_row_to_cur_spr:
-  ADC SPRITE_W
-  DEX
-  BEQ return
-  JMP add_next_row_to_cur_spr
-return:
+  ADC buffer_2
   STA current_sprite
-  RTS
+write_positions:
+  ;; calculate top sprite position
+  LDX SPRITE_H
+  STX buffer                     ; buffer contains rows left
+  LDX INITIAL_OFFSET
+next_column:
+  TXA                           ; we need X for a while
+  PHA
+  LDX buffer
+  LDA POS_Y
+subtract_height:
+  DEX
+  BMI height_calculated
+  SEC
+  SBC #$08                       ; tile height - 8 pixels
+  JMP subtract_height
+height_calculated:
+  TAY                           ; Y contains current Y pos
+  PLA                           ; restoring X
+  TAX
+  LDA #$00
+  STA buffer_2                   ; buffer_2 contains current column
+row_coords:
+  ;; write Y coord
+  TYA
+  STA $0200, X
+  ;; write X coord
+  ;; save y
+  PHA
+  LDA POS_X
+  LDY buffer_2                  ; current column
+adjust_x_pos:
+  DEY
+  BMI x_adjusted
+  CLC
+  ADC #$08
+  JMP adjust_x_pos
+x_adjusted:
+  STA $0203, X
+  ;; restore y
+  PLA
+  TAY
+  TXA
+  ;; check for finish
+  CLC
+  ADC #$04
+  CMP CALCULATED_FINAL_OFFSET
+  BEQ return
+  TAX
+  LDA buffer_2                  ; buffer 2 - current column
+  CLC
+  ADC #$01
+  CMP SPRITE_W
+  BEQ switch_to_next_row
+  INC buffer_2
+  JMP row_coords
+switch_to_next_row:
+  DEC buffer                    ; buffer contains rows left
+  LDA #00
+  STA buffer_2
+  JMP next_column
+return:
 .endproc
 
 .segment "ZEROPAGE"
-.importzp buffer
+.importzp buffer, buffer_2
 .importzp current_sprite
