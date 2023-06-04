@@ -40,8 +40,7 @@ process_npc:
   STA $F2
   ;; get attributes
   ;; TO DO: right now hardcoded
-  ;LDA #%01000000                ; palette 0, flip
-  LDA #%00000000
+  LDA #%01000000                ; palette 0, flip
   STA $F3
   ;; get x
   LDA npc_objects + NPC_LEFT, X

@@ -4,11 +4,14 @@
 
 ;;; .importzp player_x, player_y, player_flags, player_state, player_frame
 
+.include "constants.inc"
+
   FIRST_ATTACK_TILE = $18
   FIRST_PUNCH_TILE  = $20
 
 .macro Calculate_offset
   LDA current_sprite
+  CLC
   ROL                           ; memory offset is
   ROL                           ; current_sprite * 4
   TAX                           ; sprite offset is here

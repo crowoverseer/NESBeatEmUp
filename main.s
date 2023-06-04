@@ -1,20 +1,20 @@
 .include "header.inc"
 .include "constants.inc"
+.include "guard_registry.mac"
 
 .segment "CODE"
 .proc irq_handler
   RTI
 .endproc
 
-.import draw_player
 .import player_controls
 .import fighting_controller
 .import npc_artist
+.import draw_player
 
 .proc nmi_handler
   ;; saving the register states
-  PHP
-  PHA
+  Save_registry
 
   LDA #$00                      ; will transfer to PPU 00
   STA OAMADDR
@@ -46,8 +46,7 @@ set_scroll_positions:
   STA PPUSCROLL
 
   ;; restoring the register states
-  PLA
-  PLP
+  Restore_registry
 
   RTI
 .endproc
@@ -103,7 +102,7 @@ vblankwait:       ; wait for another vblank before continuing
 create_npcs:
   LDA #$00
   STA $F0
-  LDA #$C0
+  LDA #$C1
   STA $F1
   LDA #$80
   STA $F2

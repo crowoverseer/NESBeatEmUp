@@ -116,7 +116,6 @@ write_attributes:
   LDA current_sprite
   ROL                           ; *4, because tile contains 4 bytes
   ROL
-  ADC INITIAL_OFFSET
 next_attribute:
   TAX
   TYA                           ; Y contains atrributes
@@ -192,6 +191,7 @@ switch_to_next_row:
   STA buffer_2
   JMP next_column
 return:
+  RTS
 .endproc
 
 .segment "ZEROPAGE"
